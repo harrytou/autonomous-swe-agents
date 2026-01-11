@@ -1,12 +1,13 @@
 {
   "$schema": "https://opencode.ai/config.json",
+
 	
   "agent": {
     "pm-break-down-agent": {
       "description": "Primary project management agent that breaks down work into epics, stories, and tasks and coordinates other agents.",
       "mode": "primary",
       "model": "anthropic/claude-haiku-4-20250514",
-      "prompt": "{file:.config/opencode/agent/pm-break-down-agent.md}",
+      "prompt": "{file:/root/.config/opencode/agent/pm-break-down-agent.md}",
       "tools": {
         "write": true,
         "edit": true,
@@ -18,7 +19,7 @@
       "description": "Consultant research and analysis agent for exploring requirements, patterns, and external knowledge; used by the PM as needed.",
       "mode": "subagent",
       "model": "anthropic/claude-haiku-4-20250514",
-      "prompt": "{file:.config/opencode/agent/research-agent.md}",
+      "prompt": "{file:/root/.config/opencode/agent/research-agent.md}",
       "tools": {
         "write": true,
         "edit": false,
@@ -30,7 +31,7 @@
       "description": "Senior backend Python expert for architecture and implementation.",
       "mode": "subagent",
       "model": "anthropic/claude-sonnet-4-20250514",
-      "prompt": "{file:.config/opencode/agent/backend-agent.md}",
+      "prompt": "{file:/root/.config/opencode/agent/backend-agent.md}",
       "tools": {
         "write": true,
         "edit": true,
@@ -42,7 +43,7 @@
       "description": "Senior multi-platform frontend expert for web and app UIs.",
       "mode": "subagent",
       "model": "anthropic/claude-sonnet-4-20250514",
-      "prompt": "{file:.config/opencode/agent/frontend-agent.md}",
+      "prompt": "{file:/root/.config/opencode/agent/frontend-agent.md}",
       "tools": {
         "write": true,
         "edit": true,
@@ -54,7 +55,7 @@
       "description": "QA and debugging automation agent focused on Playwright and reliability.",
       "mode": "subagent",
       "model": "anthropic/claude-sonnet-4-20250514",
-      "prompt": "{file:.config/opencode/agent/qa-agent.md}",
+      "prompt": "{file:/root/.config/opencode/agent/qa-agent.md}",
       "tools": {
         "write": true,
         "edit": true,
@@ -66,7 +67,7 @@
       "description": "Cloud and DevOps agent for CI/CD, infra-as-code, and deployments.",
       "mode": "subagent",
       "model": "anthropic/claude-sonnet-4-20250514",
-      "prompt": "{file:.config/opencode/agent/cloud-agent.md}",
+      "prompt": "{file:/root/.config/opencode/agent/cloud-agent.md}",
       "tools": {
         "write": true,
         "edit": true,

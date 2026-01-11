@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: telegram-webhook
+  namespace: swe-agents
+  annotations:
+    k8s.ngrok.com/traffic-policy: telegram-webhook-policy
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: khalilah-biparous-rosia.ngrok-free.dev
+      http:
+        paths:
+          - path: /webhook
+            pathType: Prefix
+            backend:
+              service:
+                name: telegram-webhook
+                port:
+                  number: 80
+          - path: /health
+            pathType: Prefix
+            backend:
+              service:
+                name: telegram-webhook
+                port:
+                  number: 80

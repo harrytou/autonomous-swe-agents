@@ -1,15 +1,75 @@
-TBDapiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: NgrokTrafficPolicy
 metadata:
-  name: post-only
+  name: telegram-webhook-policy
   namespace: swe-agents
 spec:
   policy:
     on_http_request:
-      - actions:
-          - config:
-              status_code: 404
-            type: deny
+      - name: health-ok
         expressions:
-          - req.method != 'POST'
-        name: deny-non-post
+          - req.url.path == "/health"
+        actions:
+          - type: custom-response
+            config:
+              status_code: 200
+              headers:
+                content-type: text/plain
+              body: ok
+
+      - name: reject-non-post
+        expressions:
+          - req.url.path == "/webhook" && req.method != "POST"
+        actions:
+          - type: custom-response
+            config:
+              status_code: 404
+              headers:
+                content-type: text/plain
+              body: Not found
+
+      - name: reject-missing-secret-header
+        expressions:
+          - req.url.path == "/webhook"
+          - "!('x-telegram-bot-api-secret-token' in req.headers) || size(req.headers['x-telegram-bot-api-secret-token']) == 0"
+        actions:
+          - type: custom-response
+            config:
+              status_code: 401
+              headers:
+                content-type: text/plain
+              body: Unauthorized
+
+      - name: reject-wrong-secret
+        expressions:
+          - req.url.path == "/webhook"
+          - req.headers["x-telegram-bot-api-secret-token"][0] != secrets.get("swe-agents", "telegram_webhook_secret")
+        actions:
+          - type: custom-response
+            config:
+              status_code: 401
+              headers:
+                content-type: text/plain
+              body: Unauthorized
+
+      - name: valid-webhook-continue
+        expressions:
+          - req.url.path == "/webhook"
+          - req.method == "POST"
+          - req.headers["x-telegram-bot-api-secret-token"][0] == secrets.get("swe-agents", "telegram_webhook_secret")
+        actions:
+          - type: add-headers
+            config:
+              headers:
+                x-ngrok-webhook-verified: "true"
+
+      - name: fallback
+        expressions:
+          - req.url.path != "/webhook" && req.url.path != "/health"
+        actions:
+          - type: custom-response
+            config:
+              status_code: 404
+              headers:
+                content-type: text/plain
+              body: Not found

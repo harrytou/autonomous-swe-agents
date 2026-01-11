@@ -17,13 +17,19 @@ spec:
       labels:
         app: opencode
         component: server
+        storage-group: swe-agents-shared
     spec:
+      # Ensure this pod runs on the same node as telegram-webhook (shared PVC)
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  storage-group: swe-agents-shared
+              topologyKey: kubernetes.io/hostname
       containers:
         - name: opencode
-          # Official OpenCode image from anomalyco (Alpine-based with ripgrep)
-          # See: https://opencode.ai/docs/server/
-          image: ghcr.io/anomalyco/opencode:1.1.13
-          # The ENTRYPOINT is already set to "opencode" in the Dockerfile
+          image: ritouu/opencode:v1.5
           args:
             - "serve"
             - "--port"
@@ -34,32 +40,29 @@ spec:
             - name: http
               containerPort: 4000
               protocol: TCP
-          # --- COMMENTED OUT FOR FIRST RUN ---
-          # Uncomment and configure these for production use with API keys
-          # env:
-          #   # API keys for LLM providers - replace with your actual keys or use secrets
-          #   - name: ANTHROPIC_API_KEY
-          #     valueFrom:
-          #       secretKeyRef:
-          #         name: opencode-secrets
-          #         key: anthropic-api-key
-          #         optional: true
-          #   - name: OPENAI_API_KEY
-          #     valueFrom:
-          #       secretKeyRef:
-          #         name: opencode-secrets
-          #         key: openai-api-key
-          #         optional: true
-          #   # Optional: Google/Gemini API key
-          #   - name: GOOGLE_API_KEY
-          #     valueFrom:
-          #       secretKeyRef:
-          #         name: opencode-secrets
-          #         key: google-api-key
-          #         optional: true
-          #   # Optional: Set the working directory for the agent
-          #   - name: HOME
-          #     value: "/workspace"
+          env:
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: opencode-secrets
+                  key: anthropic-api-key
+                  optional: true
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: opencode-secrets
+                  key: openai-api-key
+                  optional: true
+            - name: GOOGLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: opencode-secrets
+                  key: google-api-key
+                  optional: true
+          volumeMounts:
+            # Mount shared data directory (projects created by telegram bot)
+            - name: shared-data
+              mountPath: /data
           resources:
             requests:
               memory: "256Mi"
@@ -67,17 +70,6 @@ spec:
             limits:
               memory: "1Gi"
               cpu: "500m"
-          # --- COMMENTED OUT FOR FIRST RUN ---
-          # volumeMounts:
-          #   # Mount workspace directory for code operations
-          #   - name: workspace
-          #     mountPath: /workspace
-          #   # Mount config directory for opencode configuration
-          #   - name: opencode-config
-          #     mountPath: /root/.config/opencode
-          #     readOnly: true
-          # Health check using the official /global/health endpoint
-          # Returns: { healthy: true, version: string }
           livenessProbe:
             httpGet:
               path: /global/health
@@ -97,58 +89,7 @@ spec:
           securityContext:
             runAsNonRoot: false
             allowPrivilegeEscalation: false
-      # --- COMMENTED OUT FOR FIRST RUN ---
-      # volumes:
-      #   # Persistent volume for workspace data
-      #   - name: workspace
-      #     persistentVolumeClaim:
-      #       claimName: opencode-workspace-pvc
-      #   # ConfigMap for opencode configuration
-      #   - name: opencode-config
-      #     configMap:
-      #       name: opencode-config
-      #       optional: true
----
-# --- COMMENTED OUT FOR FIRST RUN ---
-# Uncomment these resources when you need persistent storage and API keys
-#
-# # PersistentVolumeClaim for workspace storage
-# apiVersion: v1
-# kind: PersistentVolumeClaim
-# metadata:
-#   name: opencode-workspace-pvc
-#   labels:
-#     app: opencode
-# spec:
-#   accessModes:
-#     - ReadWriteOnce
-#   resources:
-#     requests:
-#       storage: 10Gi
-# ---
-# # Secret for API keys (create this separately with your actual keys)
-# # Reference: https://opencode.ai/docs/server/
-# apiVersion: v1
-# kind: Secret
-# metadata:
-#   name: opencode-secrets
-#   labels:
-#     app: opencode
-# type: Opaque
-# stringData:
-#   anthropic-api-key: "YOUR_ANTHROPIC_API_KEY_HERE"
-#   openai-api-key: "YOUR_OPENAI_API_KEY_HERE"
-#   google-api-key: "YOUR_GOOGLE_API_KEY_HERE"
-# ---
-# # Optional: ConfigMap for opencode configuration
-# apiVersion: v1
-# kind: ConfigMap
-# metadata:
-#   name: opencode-config
-#   labels:
-#     app: opencode
-# data:
-#   config.json: |
-#     {
-#       "$schema": "https://opencode.ai/config.json"
-#     }
+      volumes:
+        - name: shared-data
+          persistentVolumeClaim:
+            claimName: swe-agents-data

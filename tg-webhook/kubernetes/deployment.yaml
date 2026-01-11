@@ -14,10 +14,19 @@ spec:
     metadata:
       labels:
         app: telegram-webhook
+        storage-group: swe-agents-shared
     spec:
+      # Ensure this pod runs on the same node as opencode-server
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  storage-group: swe-agents-shared
+              topologyKey: kubernetes.io/hostname
       containers:
       - name: webhook
-        image: ritouu/tg-webhook:latest
+        image: ritouu/tg-webhook:v1.1
         ports:
         - containerPort: 8000
         env:
@@ -28,6 +37,19 @@ spec:
                 key: bot-token
           - name: OPENCODE_URL
             value: "http://opencode-server:4000"
+          - name: DATA_DIR
+            value: "/data"
+          - name: ALLOW_ALL_USERS
+            value: "false"
+          - name: WHITELIST_USER_IDS
+            valueFrom:
+              secretKeyRef:
+                name: telegram-secrets
+                key: whitelist-user-ids
+                optional: true
+        volumeMounts:
+          - name: data
+            mountPath: /data
         resources:
           requests:
             memory: "256Mi"
@@ -47,3 +69,7 @@ spec:
             port: 8000
           initialDelaySeconds: 5
           periodSeconds: 10
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: swe-agents-data
