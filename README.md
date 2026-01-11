@@ -42,11 +42,45 @@ As a user, I receive a summary of what was built and how to run it when the work
 
 ```
 autonomous-swe-agents/
-├── agents/          # Agent definitions and specifications
-├── kubernetes/      # Kubernetes manifests for deployment
-└── README.md        # This file
+├── agents/                    # Agent definitions and specifications
+├── tg-webhook/                # Telegram webhook bridge to OpenCode
+│   ├── kubernetes/           # Kubernetes manifests
+│   ├── webhook.py           # FastAPI webhook server
+│   ├── requirements.txt     # Python dependencies
+│   ├── Dockerfile           # Container image
+│   └── README.md            # Webhook documentation
+└── README.md                 # This file
 ```
 
-## Getting Started
+## Components
 
-_Coming soon_
+### Telegram Webhook
+
+Bridges Telegram Bot API with the OpenCode server. See [tg-webhook/README.md](tg-webhook/README.md) for details.
+
+**Key features:**
+- Creates/manages OpenCode sessions per Telegram chat
+- Forwards messages to OpenCode API
+- Returns AI responses to users via Telegram
+
+## Quick Start
+
+### Telegram Webhook
+
+```bash
+cd tg-webhook
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure
+cp .env.example .env
+# Edit .env with your bot token and OpenCode URL
+
+# Run locally
+python webhook.py
+
+# Or deploy to Kubernetes
+kubectl apply -f kubernetes/secrets.yaml
+kubectl apply -f kubernetes/deployment.yaml
+```
