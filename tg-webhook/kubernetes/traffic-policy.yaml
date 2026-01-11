@@ -1,0 +1,15 @@
+TBDapiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: post-only
+  namespace: swe-agents
+spec:
+  policy:
+    on_http_request:
+      - actions:
+          - config:
+              status_code: 404
+            type: deny
+        expressions:
+          - req.method != 'POST'
+        name: deny-non-post
