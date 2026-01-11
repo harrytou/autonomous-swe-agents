@@ -66,39 +66,31 @@ spec:
 #       port: 4000
 #       targetPort: 4000
 #       protocol: TCP
----
-# Ingress for external HTTP/HTTPS access
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: opencode-server-ingress
-  labels:
-    app: opencode
-    component: server
-  annotations:
-    # Nginx Ingress Controller annotations
-    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    # Enable websocket support for real-time communication
-    nginx.ingress.kubernetes.io/websocket-services: "opencode-server"
-    # Uncomment for TLS with cert-manager
-    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
-spec:
-  ingressClassName: nginx  # Change to your ingress class if different
-  rules:
-    - host: opencode.example.com  # Replace with your domain
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: opencode-server
-                port:
-                  number: 4000
-  # Uncomment for TLS/HTTPS
-  # tls:
-  #   - hosts:
-  #       - opencode.example.com
-  #     secretName: opencode-tls-secret
+# ---
+# --- COMMENTED OUT FOR FIRST RUN ---
+# Ingress for external HTTP/HTTPS access (only needed for domain-based routing)
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: opencode-server-ingress
+#   labels:
+#     app: opencode
+#     component: server
+#   annotations:
+#     nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+#     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+#     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+#     nginx.ingress.kubernetes.io/websocket-services: "opencode-server"
+# spec:
+#   ingressClassName: nginx
+#   rules:
+#     - host: opencode.example.com
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: opencode-server
+#                 port:
+#                   number: 4000
