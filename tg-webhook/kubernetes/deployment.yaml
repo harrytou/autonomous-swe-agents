@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegram-webhook
+  labels:
+    app: telegram-webhook
+  namespace: swe-agents
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegram-webhook
+  template:
+    metadata:
+      labels:
+        app: telegram-webhook
+    spec:
+      containers:
+      - name: webhook
+        image: ritouu/tg-webhook:v1
+        ports:
+        - containerPort: 8000
+        env:
+          - name: TELEGRAM_BOT_TOKEN
+            value: "YOUR_TELEGRAM_BOT_TOKEN"
+#        - name: TELEGRAM_BOT_TOKEN
+#          valueFrom:
+#            secretKeyRef:
+#              name: telegram-secrets
+#              key: bot-token
+          - name: OPENCODE_URL
+            value: "http://opencode-service:8080"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: telegram-webhook
+  namespace: swe-agents
+spec:
+  selector:
+    app: telegram-webhook
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8000
+  type: ClusterIP
