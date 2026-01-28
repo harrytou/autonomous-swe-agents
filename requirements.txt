@@ -1,0 +1,9 @@
+# Core dependencies for autonomous SWE agents
+
+# RLM for safe code execution
+rlm>=0.1.0
+
+# Optional: For isolated cloud execution
+# Uncomment as needed:
+# rlm[modal]
+# rlm[prime]

@@ -43,14 +43,36 @@ As a user, I receive a summary of what was built and how to run it when the work
 ```
 autonomous-swe-agents/
 ├── agents/                    # Agent definitions and specifications
+│   ├── __init__.py           # Python module init
+│   └── rlm_executor.py       # RLM safe execution wrapper
+├── tasks/                     # PRDs and progress tracking (Ralph pattern)
+│   └── README.md             # Task directory documentation
+├── examples/                  # Integration tests and examples
+│   └── test_ralph_integration.py
 ├── tg-webhook/                # Telegram webhook bridge to OpenCode
 │   ├── kubernetes/           # Kubernetes manifests
 │   ├── webhook.py           # FastAPI webhook server
 │   ├── requirements.txt     # Python dependencies
 │   ├── Dockerfile           # Container image
 │   └── README.md            # Webhook documentation
+├── opencode/                  # OpenCode agent configurations
+│   └── .config/agent/        # Agent prompt files (PM, Backend, Frontend, QA)
+├── requirements.txt           # Project dependencies (includes RLM)
+├── RALPH_RLM_INTEGRATION.md  # Integration documentation
+├── QUICK_START.md            # Quick start guide
 └── README.md                 # This file
 ```
+
+## 🚀 New: Ralph + RLM Integration
+
+The system now includes autonomous iteration patterns and safe code execution:
+
+- **Ralph Pattern**: Agents work autonomously through PRDs with quality gates
+- **RLM Integration**: Safe, isolated code execution environments
+- **Progress Tracking**: Git commits + progress files preserve learnings
+- **Quality Enforcement**: Tests/typecheck required before proceeding
+
+See [RALPH_RLM_INTEGRATION.md](RALPH_RLM_INTEGRATION.md) for full details and [QUICK_START.md](QUICK_START.md) for testing instructions.
 
 ## Components
 
