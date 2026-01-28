@@ -3,76 +3,46 @@
 
 	
   "agent": {
-    "pm-break-down-agent": {
-      "description": "Primary project management agent that breaks down work into epics, stories, and tasks and coordinates other agents.",
+    "project-manager-agent": {
+      "description": "Orchestrates software delivery by transforming features into actionable implementation plans, managing dependencies and priorities, and aligning technical execution with business goals.",
       "mode": "primary",
       "model": "anthropic/claude-haiku-4-20250514",
-      "prompt": "{file:/root/.config/opencode/agent/pm-break-down-agent.md}",
-      "tools": {
-        "write": true,
-        "edit": true,
-        "bash": false
-      }
+      "prompt": "{file:/root/.config/opencode/agent/project-manager.md}"
     },
 
     "research-agent": {
-      "description": "Consultant research and analysis agent for exploring requirements, patterns, and external knowledge; used by the PM as needed.",
+      "description": "Conducts comprehensive research, validates sources, and delivers well-cited reports consolidating business intelligence, user insights, and technical recommendations into actionable findings.",
       "mode": "subagent",
       "model": "anthropic/claude-haiku-4-20250514",
-      "prompt": "{file:/root/.config/opencode/agent/research-agent.md}",
-      "tools": {
-        "write": true,
-        "edit": false,
-        "bash": false
-      }
+      "prompt": "{file:/root/.config/opencode/agent/research.md}"
     },
 
     "backend-agent": {
       "description": "Senior backend Python expert for architecture and implementation.",
       "mode": "subagent",
       "model": "anthropic/claude-sonnet-4-20250514",
-      "prompt": "{file:/root/.config/opencode/agent/backend-agent.md}",
-      "tools": {
-        "write": true,
-        "edit": true,
-        "bash": true
-      }
+      "prompt": "{file:/root/.config/opencode/agent/backend.md}"
     },
 
     "frontend-agent": {
       "description": "Senior multi-platform frontend expert for web and app UIs.",
       "mode": "subagent",
       "model": "anthropic/claude-sonnet-4-20250514",
-      "prompt": "{file:/root/.config/opencode/agent/frontend-agent.md}",
-      "tools": {
-        "write": true,
-        "edit": true,
-        "bash": true
-      }
+      "prompt": "{file:/root/.config/opencode/agent/frontend.md}"
     },
 
     "qa-agent": {
-      "description": "QA and debugging automation agent focused on Playwright and reliability.",
+      "description": "Comprehensive quality specialist handling test strategy, automation, security, performance, and defect management—ensuring software reliability through testing and enforcing release quality gates.",
       "mode": "subagent",
       "model": "anthropic/claude-sonnet-4-20250514",
-      "prompt": "{file:/root/.config/opencode/agent/qa-agent.md}",
-      "tools": {
-        "write": true,
-        "edit": true,
-        "bash": true
-      }
+      "prompt": "{file:/root/.config/opencode/agent/qa.md}"
     },
 
     "cloud-agent": {
       "description": "Cloud and DevOps agent for CI/CD, infra-as-code, and deployments.",
       "mode": "subagent",
       "model": "anthropic/claude-sonnet-4-20250514",
-      "prompt": "{file:/root/.config/opencode/agent/cloud-agent.md}",
-      "tools": {
-        "write": true,
-        "edit": true,
-        "bash": true
-      }
+      "prompt": "{file:/root/.config/opencode/agent/cloud.md}"
     }
   }
 }
